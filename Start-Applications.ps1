@@ -2,6 +2,7 @@ $StartupPath = "$([Environment]::GetFolderPath('MyDocuments'))\Startup"
 <#
 Sequentially launches shortcuts in the $StartupPath following a filename format while waiting for IOPS to settle before proceeding
 to the next application.
+Besure to disable/delete the auto start feature of any applications included.
 
 <Launch Order>-<Launch Type>-<Window Title Includes>-<(Optional) Alternate Executable>
 
