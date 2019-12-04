@@ -1,8 +1,47 @@
 $StartupPath = "$([Environment]::GetFolderPath('MyDocuments'))\Startup"
 <#
-#AppName
-Start-GracefulProcess -Path "$env:HOMEDRIVE$env:HOMEPATH" -Executable "$env:SystemRoot\system32\mmc.exe" -ArgumentList "$env:SystemRoot\system32\gpmc.msc" -AltExecutable "null.exe"
+Sequentially launches shortcuts in the $StartupPath following a filename format while waiting for IOPS to settle before proceeding
+to the next application.
 
+<Launch Order>-<Launch Type>-<Window Title Includes>-<(Optional) Alternate Executable>
+
+Launch Order:
+    An alphanumeric indication of which application to start first. It is suggested to specify applications that trigger
+    high IOPS useage during launch are specified with alpha indications to ensure they are last. Initally setting files in increments
+    of 10 (i.e. 010,020,030,etc...) to make re-ordering less tedious. A new application could be specified with 005,015,025,etc...
+    without renaming additional shortcuts.
+        010, 020, 030, 032, 049, A, AAA, Z, ZZZ are examples of valid order indications.
+
+Launch Type:
+    Indicates how the application is detected before launching in one of 4 abbreviations
+    
+    eo - Executable only. If the executable in the shortcut is running, the application will be detected and not launched, otherwise the
+    shortcut will be invoked.
+    et - Executable and Title. If the executable in the shortcut is running and a window title which matches specified in the "Window 
+    Title Includes" segment is found, the application will be detected and not launched, otherwise the shortcut will be invoked.
+    to - Title Only. If any window of any application is found with the title which matches specified in the "Window Title Includes"
+    segment is found, the application will be detected and not launched, otherwise the shortcut will be invoked.
+    ae - Alternate Executable. If a program is found running specified in the otherwise optional "Optional Alternate Executable" segment
+    the application will be detected and not launched, otherwise the shortcut will be invoked. This is useful when the shortcut does not
+    include the executable that eventually will be run and the title can change depending on the application's context.
+    
+Window Title Includes:
+    Window titles are matched by wild card "*Window Title*" matches windows with the title "My Window Title Example" and "Window Title
+    Example". This has no effect if Launch Types eo or ae are specified but should be included for identifying the program in the
+    startup folder by a user.
+    
+Alternate Executable:
+    Specifies an executable to detect application status which may not be called by the shortcut. This is optional for all Launch Types
+    other than ae.
+    
+    
+Examples:
+010-eo-Outlook
+020-eo-Word
+030-et-Active Directory Users and Computers
+040-et-DNS
+050-ae-Microsoft Teams-Teams
+Z-eo-OneDrive
 #>
 
 function Wait-DiskActivity {
