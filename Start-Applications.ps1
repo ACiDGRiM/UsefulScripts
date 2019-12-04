@@ -43,6 +43,8 @@ Examples:
 040-et-DNS
 050-ae-Microsoft Teams-Teams
 Z-eo-OneDrive
+
+(c)2019 ACiDGRiM
 #>
 
 function Wait-DiskActivity {
