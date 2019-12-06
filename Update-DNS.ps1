@@ -6,9 +6,9 @@ Param (
 
 begin {
     #Gather status of system IP Addresses, DNS Servers, and domains
-    $IPAddresses = Get-NetIPAddress | Where-Object -FilterScript { ($_.InterfaceAlias -like "Ethernet*" -or $_.InterfaceAlias -like "WiFi*") -and $_.IPAddress -notlike "fe*"}
-    $DNSServers = Get-DnsClientServerAddress | Where-Object -FilterScript { $_.InterfaceAlias -like "Ethernet*" -or $_.InterfaceAlias -like "WiFi*"}
-    $DNSClient = Get-DnsClient | Where-Object -FilterScript { $_.InterfaceAlias -like "Ethernet*" -or $_.InterfaceAlias -like "WiFi*"}
+    $IPAddresses = Get-NetIPAddress | Where-Object -FilterScript { ($_.InterfaceAlias -like "Ethernet*" -or $_.InterfaceAlias -like "Wi-Fi*") -and $_.IPAddress -notlike "fe*"}
+    $DNSServers = Get-DnsClientServerAddress | Where-Object -FilterScript { $_.InterfaceAlias -like "Ethernet*" -or $_.InterfaceAlias -like "Wi-Fi*"}
+    $DNSClient = Get-DnsClient | Where-Object -FilterScript { $_.InterfaceAlias -like "Ethernet*" -or $_.InterfaceAlias -like "Wi-Fi*"}
 }
 
 process {
@@ -39,7 +39,6 @@ process {
         $CombinedOutput += $CombinedObj 
     }
 
-    $CombinedOutput
     foreach ( $o in $CombinedOutput ) {
         foreach ( $s in $o.Servers ) {
             $CurrentRecords = Resolve-DnsName $env:COMPUTERNAME`.$($o.Zone) -Server $s -Type "A_AAAA" -DnsOnly -DnssecOK -QuickTimeout -ErrorAction "SilentlyContinue" | Select-Object -ExpandProperty "IPAddress" -ErrorAction "SilentlyContinue"
@@ -76,7 +75,7 @@ update add $PTR 60 PTR $env:COMPUTERNAME.$($o.Zone).
 }
 
 end {
-    $script| Out-File -FilePath $NSScriptPath -Encoding "ascii" -Force
+    $script | Out-File -FilePath $NSScriptPath -Encoding "ascii" -Force
     Start-Process -FilePath (Join-Path -Path $NSUpdatePath -ChildPath "nsupdate.exe") -ArgumentList "-d -k `"$KeyPath`" `"$NSScriptPath`"" -Wait -NoNewWindow -RedirectStandardError "$env:TEMP\nsstderr" -RedirectStandardOutput "$env:TEMP\nsstdout" -WorkingDirectory $NSUpdatePath | Out-Null
     
 }
