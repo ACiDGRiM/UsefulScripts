@@ -82,7 +82,7 @@ Write-Host $LaunchType
             $sh = New-Object -ComObject "WScript.Shell"
             $Executable = $sh.CreateShortcut($Shortcut).TargetPath | Select-String -AllMatches -Pattern "[a-zA-Z0-9 ]{1}\\([A-Za-z0-9. ]*)\.[a-zA-Z0-9 ]{3}" | Foreach-Object {$_.Matches.Groups.Value[1]}
             $Processes = Get-Process -Name $Executable -ErrorAction "SilentlyContinue"
-            ForEach ( $w in $Processes.MainWindowTitle ) {        
+            ForEach ( $w in $Processes.MasterWindowTitle ) {        
                 if ( $w -like "*${WindowTitleIncludes}*" ) {
                     $Running = $true
                 }
@@ -91,7 +91,7 @@ Write-Host $LaunchType
         #WindowTitle Only
         "to" {
             $Processes = Get-Process -ErrorAction "SilentlyContinue"
-            ForEach ( $w in $Processes.MainWindowTitle ) {        
+            ForEach ( $w in $Processes.MasterWindowTitle ) {        
                 if ( $w -like "*${WindowTitleIncludes}*" ) {
                     $Running = $true
                 }
